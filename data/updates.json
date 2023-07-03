@@ -1,0 +1,45 @@
+{
+    "updates": [
+      {
+        "version": "v1.1.1-beta",
+        "timestamp": "July 1st, 2023",
+        "log": "Change Log:\n- Added ``/play link:`` which allows the user to play there own custom stream links on voice channels. Must be supported and will not support youtube links at all.\n- Added Turkey radio stations, more are comming soon so watch out for that!\n- Added ``/links`` command to see bot links and dev links"
+      },
+      {
+        "version": "v1.1.0-beta",
+        "timestamp": "June 29th, 2023",
+        "log": "Change Log:\n- Reworked bot profile /+ status.\n- Redid owner checks for commands\n- Made commands hidden and only for me (still in the works) so you guys can't use/see somethings"
+      },
+      {
+        "version": "v1.0.9-beta",
+        "timestamp": "June 29th, 2023",
+        "log": "Added:\n- A ``/wiki`` command to explain how to use the bot and other important info that you and other people would benifit from knowing."
+      },
+      {
+        "version": "v1.0.8-beta",
+        "timestamp": "June 28th, 2023",
+        "log": "Added:\n- Blacklisting function to blacklist users from using the bot if they abuse it in any way shape or form. I really hope i wont have to use this feature on anyone.\n- Optimized commands and code, and some other stuff."
+      },
+      {
+        "version": "v1.0.7-beta",
+        "timestamp": "June 25th, 2023",
+        "log": "Added\n- PH Radio Stations, ``/radio region:ph action:station``\n- Added cooldown on some commands for the radio to reduce stress on the bot when users spam it.\n- Made the command cooldown embed and made it look nice\n- Made the ``/radio`` command better with full country names instead of the 2 letters."
+      },
+      {
+        "version": "v1.0.6-beta",
+        "timestamp": "June 25th, 2023",
+        "log": "Added:\n- More radio stations \n- Command cooldowns \n- Updated some links for stations \n- Fixed volume control issues with negitive volume. \n- Added a ``/mute`` command which allows the bot to be quickly muted and unmuted!"
+      },
+      {
+        "version": "v1.0.5-beta",
+        "timestamp": "June 24th, 2023",
+        "log": "Added:\n- ``/update version:`` You can now check in any server what updates happened in the past or just been worked and added in the bot."
+      },  
+      {
+        "version": "v1.0.4-beta",
+        "timestamp": "June 24th, 2023",
+        "log": "Added:\n- Russian Radio Stations\n- African Radio Stations\n\nFixed:\n- Fixed suggestions bot\n- Changed radio station links to radio garden (reason being that the bot was in violation of TOS for iHeart. Now that we are using radio garden we are Gucci)\n\nUpcoming:\n- More stations\n- Optimization for the bot\n- Weekly updates"
+      }
+    ]
+  }
+  

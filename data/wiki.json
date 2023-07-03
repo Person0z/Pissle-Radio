@@ -1,0 +1,12 @@
+{
+  "entries": [
+    {
+      "title": "Bot Introduction",
+      "content": "The bot is a radio bot called Pissle radio. You can use it by doing ``/radio region:[place] action:[station]`` to select a radio station. After selecting a station, you can play a song using the bot.\n\n- Example: ``/radio region:UK - United Kingdom action:Capital FM``\n\nTo control the server volume for the bot, you can use the ``/volume`` command. The command allows you to adjust the volume level.\n\nIf you need help with command usage, you can use the ``/help`` command. It provides information and usage instructions for various commands.\n\nTo quickly mute and unmute the bot, you can use the ``/mute`` command.\n\nIf you have any suggestions for the bot, you can use the ``/suggest`` command to send your suggestions to the bot creators.\n\nTo view wikis about various topics, you can use the ``/wiki`` command. It provides access to information and articles on different subjects.\n\nFor detailed information about the bot, including resource usage, developer details, and more, you can use the ``/botinfo`` command."
+    },
+    {
+      "title": "Radio Station Sources",
+      "content": "We are currently in talks with Radio Garden (https://radio.garden/) and Global.com (https://global.com/) to secure access to their stream links and resources. These collaborations would enable us to offer enhanced features such as next playing information, artist details, and more, if approved and coordinated with by the respective platforms.\n\nIn addition, we have permission and access to use some user-hosted and provided stream links. These stream links are contributed by our users and allow us to expand our selection of available radio stations."
+    }
+  ]
+}
