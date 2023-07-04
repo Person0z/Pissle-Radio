@@ -193,21 +193,6 @@ class general(commands.Cog):
 
         return available_queries
 
-    @commands.slash_command(description="Toggle a user's blacklist status")
-    @checks.is_owner()
-    async def blacklist(self, ctx, user: disnake.User):
-        with open('data/blacklist.json', 'r') as file:
-            blacklist = json.load(file)
-        if str(user.id) in blacklist['blacklisted_ids']:
-            blacklist['blacklisted_ids'].remove(str(user.id))
-            action = 'unblacklisted'
-        else:
-            blacklist['blacklisted_ids'].append(str(user.id))
-            action = 'blacklisted'
-        with open('data/blacklist.json', 'w') as file:
-            json.dump(blacklist, file, indent=4)
-        await ctx.send(f'{user} has been {action}.')
-
     # bot links for voting and stuff
     @commands.slash_command(description="Get the bot's links")
     async def links(inter: disnake.ApplicationCommandInteraction):
@@ -222,10 +207,6 @@ class general(commands.Cog):
         embed.add_field(name="Developer Github", value="> [Person0z's Github](https://github.com/Person0z)", inline=True)
         await inter.send(embed=embed)
 
-    @commands.slash_command(name="error", description="Command that raises an error", guild=config.guilds_ids)
-    @checks.is_owner()
-    async def error_command(inter: disnake.ApplicationCommandInteraction):
-        raise ValueError("This is a deliberate error for testing purposes.")
 
 def setup(bot):
     bot.add_cog(general(bot))

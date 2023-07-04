@@ -39,7 +39,7 @@ bot = commands.AutoShardedInteractionBot(
 
 radio_player = None
 voice_channel = None
-disconnect_timer = 60  # Time in seconds before auto-disconnect
+voice_clients = {}  # Dictionary to store voice clients per server
 
 # Load the initial blacklist data
 load_blacklist()
@@ -68,24 +68,16 @@ async def on_voice_state_update(member, before, after):
     if member.id == bot.user.id:  # Check if the member is the bot itself
         if before.deaf != after.deaf:  # Check if the deaf state has changed
             await member.edit(deafen=True)  # Deafen the bot
-
+"""
 @bot.event
 async def on_voice_state_update(member, before, after):
-    global voice_channel
-
-    if member.id == bot.user.id:  # Check if the member is the bot itself
-        if before.channel != after.channel:  # Check if the channel has changed
-            voice_channel = after.channel
-
-        if before.deaf != after.deaf:  # Check if the deaf state has changed
-            await member.edit(deafen=True)  # Deafen the bot
-
-    if voice_channel and len(voice_channel.members) == 1:  # Only bot is left in the channel
-        try:
-            await bot.wait_for('voice_state_update', timeout=disconnect_timer)
-        except asyncio.TimeoutError:
-            if voice_channel.guild.voice_client:  # Check if the bot is already connected
-                await voice_channel.guild.voice_client.disconnect()
+    bot_voice_channel = member.guild.voice_client
+    if bot_voice_channel and len(bot_voice_channel.channel.members) == 1 and bot_voice_channel.channel.members[0] == bot.user:
+        await asyncio.sleep(60)
+    if bot_voice_channel and len(bot_voice_channel.channel.members) == 1 and bot_voice_channel.channel.members[0] == bot.user:
+        await bot_voice_channel.disconnect()
+        print(f"Left {bot_voice_channel.channel.name} due to inactivity.")
+"""
 
 # On Ready
 @bot.event
@@ -121,48 +113,6 @@ async def status_task():
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
-
-# A slash command to reload cogs
-@bot.slash_command(name="reload", description="Reloads a cog", guild=config.guilds_ids)
-@checks.is_owner()
-async def reload(inter: disnake.ApplicationCommandInteraction, cog: str):
-    try:
-        bot.reload_extension(f"cogs.{cog}")
-        embed = disnake.Embed(title="Success", description=f"Reloaded {cog}", color=config.Success())
-        embed.set_footer(text=f"Requested by {inter.author}", icon_url=inter.author.avatar.url)
-        embed.set_thumbnail(url=inter.guild.me.avatar.url)
-        await inter.send(embed=embed, ephemeral=True)
-    except Exception as e:
-        embed = disnake.Embed(title="Error", description=f"Failed to reload {cog} because of {e}", color=config.Error())
-        embed.set_footer(text=f"Requested by {inter.author}", icon_url=inter.author.avatar.url)
-        embed.set_thumbnail(url=inter.guild.me.avatar.url)
-        await inter.send(embed=embed, ephemeral=True)
-
-# A slash command to restart the bot
-@bot.slash_command(name="restart", description="Restarts the bot and plays a restart message", guild=config.guilds_ids)
-@checks.is_owner()
-async def restart(inter: disnake.ApplicationCommandInteraction):
-    # Pause all radio stations (if implemented)
-    if radio_player is not None:
-        radio_player.pause_all()
-
-    # Play the restart message (replace 'path_to_restart_audio.mp3' with your audio file)
-    voice_client = disnake.utils.get(bot.voice_clients, guild=inter.guild)
-    if voice_client is not None and voice_client.is_connected():
-        voice_client.stop()
-        voice_client.play(disnake.FFmpegPCMAudio('assets/restart.mp3'))
-    await inter.response.send_message("Restarting the bot...", ephemeral=True)
-
-    # Wait for a few moments before restarting the bot
-    await asyncio.sleep(9)
-
-    # Disconnect from the voice channel (if connected)
-    if voice_client is not None and voice_client.is_connected():
-        await voice_client.disconnect()
-
-    # Restart the bot using os.execv to run the script again
-    python = sys.executable
-    os.execv(python, [python] + sys.argv)
 
 #Bot Token
 bot.run(config.token, reconnect=True)

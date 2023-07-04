@@ -1,6 +1,11 @@
 {
     "updates": [
       {
+        "version": "v1.1.2-beta",
+        "timestamp": "July 2nd, 2023",
+        "log": "Change log\n- Optimized Code and doing further optimizing.\n- Added a auto leave after 60 seconds so the bot wont use up resources and play music if no one is a VC\n- Worked on a ``/join`` command and a ``/disconnect`` command\n- Added a few more things to the ``/botinfo`` command (swap usage)\n\n- **HOTFIX**: Quick hotfix for the auto disconnect as it was disconnecting when people were in the vc still. Has been fixed and reworked."
+      },
+      {
         "version": "v1.1.1-beta",
         "timestamp": "July 1st, 2023",
         "log": "Change Log:\n- Added ``/play link:`` which allows the user to play there own custom stream links on voice channels. Must be supported and will not support youtube links at all.\n- Added Turkey radio stations, more are comming soon so watch out for that!\n- Added ``/links`` command to see bot links and dev links"

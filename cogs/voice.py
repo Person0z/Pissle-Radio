@@ -129,8 +129,8 @@ class voice(commands.Cog):
         bot_member = guild.get_member(self.bot.user.id)
         
         # Update bot's nickname with mute emoji
-        new_nickname = f"{bot_member.display_name} (Muted 🔇)" if is_muted else bot_member.name
-        await bot_member.edit(nick=new_nickname)
+#        new_nickname = f"{bot_member.display_name} (Muted 🔇)" if is_muted else bot_member.name
+#        await bot_member.edit(nick=new_nickname)
         
         embed = disnake.Embed(title='Mute | Control', description=f'The bot has been {status}.', color=config.Success())
         message = await ctx.send(embed=embed)
