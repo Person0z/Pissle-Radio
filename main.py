@@ -5,7 +5,7 @@
 #           Do Not Remove This Header         #
 ###############################################
 
-# Imports - Don't Remove any!!
+# Imports Don't Remove any!!
 import disnake
 from disnake.ext import commands, tasks
 import asyncio
@@ -35,7 +35,7 @@ def load_blacklist():
 bot = commands.AutoShardedInteractionBot(
     intents=disnake.Intents.default(),
     status=disnake.Status.online,
-)
+    )
 
 radio_player = None
 voice_channel = None
@@ -46,9 +46,9 @@ load_blacklist()
 
 @bot.slash_command_check
 async def global_blacklist_check(inter: disnake.ApplicationCommandInteraction):
+    load_blacklist()  # Reload the blacklist data on every command invocation
     if str(inter.author.id) in blacklisted_ids:
-        await inter.response.send_message(
-            "You are blacklisted and cannot use this command or any command on this bot.", ephemeral=True)
+        await inter.response.send_message("You are blacklisted and cannot use this command or any command on this bot.", ephemeral=True)
         return False
     return True
 
@@ -57,14 +57,17 @@ async def on_slash_command_error(inter, error):
     try:
         raise error
     except commands.CommandOnCooldown as e:
-        await inter.response.send_message(
-            f"This command is on cooldown. Please try again in {e.retry_after:.2f} seconds.", ephemeral=True)
+        await inter.response.send_message(f"This command is on cooldown. Please try again in {e.retry_after:.2f} seconds.", ephemeral=True)
     except Exception as e:
-        await inter.response.send_message(
-            "**An error occurred while processing your command.**\n> This has already been logged **and** already sent to the developer.\n\n- For more support join: https://discord.gg/E3cs9ewqMP",
-            ephemeral=True)
+        await inter.response.send_message("**An error occurred while processing your command.**\n> This has already been logged **and** already sent to the developer.\n\n- For more support join: https://discord.gg/E3cs9ewqMP", ephemeral=True)
         command_name = inter.data['name']
         logging.error(f"An error occurred in command '/{command_name}': {type(e).__name__}: {e}")
+
+@bot.event
+async def on_voice_state_update(member, before, after):
+    if member.id == bot.user.id:  # Check if the member is the bot itself
+        if before.deaf != after.deaf:  # Check if the deaf state has changed
+            await member.edit(deafen=True)  # Deafen the bot
 
 @bot.event
 async def on_voice_state_update(member, before, after):
@@ -84,28 +87,32 @@ async def on_voice_state_update(member, before, after):
             if voice_channel.guild.voice_client:  # Check if the bot is already connected
                 await voice_channel.guild.voice_client.disconnect()
 
+# On Ready
 @bot.event
 async def on_ready():
     print('###############################################')
     print('#           Template made by Person0z         #')
     print('#          https://github.com/Person0z        #')
-    print('#           Copyright© Person0z, 2023         #')
+    print('#           Copyright© Person0z, 2023         #') 
     print('###############################################')
-    print('\n\n')
+    print('')
+    print('')
     print('===============================================')
     print("The bot is ready!")
     print(f'Logged in as {bot.user.name}#{bot.user.discriminator} | {bot.user.id}')
-    print(f"In: {len(bot.guilds)} server(s) | {len(bot.users)} user(s)")
+    print(f"In: {len(bot.guilds)} server(s) | {len(bot.users)} user(s)") 
     print(f'Running on {platform.system()} {platform.release()} ({os.name})')
     print(f"Disnake version : {disnake.__version__}")
     print(f"Python version: {platform.python_version()}")
     print('===============================================')
-    print('\n\n')
+    print('')
+    print('')
     print('================== Loaded Cogs ================')
     status_task.start()
     await asyncio.sleep(0.01)
     print('===============================================')
 
+# Status Task
 @tasks.loop(minutes=0.15)
 async def status_task():
     await bot.change_presence(activity=disnake.Game(random.choice(config.activity)))
@@ -115,6 +122,7 @@ for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
+# A slash command to reload cogs
 @bot.slash_command(name="reload", description="Reloads a cog", guild=config.guilds_ids)
 @checks.is_owner()
 async def reload(inter: disnake.ApplicationCommandInteraction, cog: str):
@@ -130,6 +138,7 @@ async def reload(inter: disnake.ApplicationCommandInteraction, cog: str):
         embed.set_thumbnail(url=inter.guild.me.avatar.url)
         await inter.send(embed=embed, ephemeral=True)
 
+# A slash command to restart the bot
 @bot.slash_command(name="restart", description="Restarts the bot and plays a restart message", guild=config.guilds_ids)
 @checks.is_owner()
 async def restart(inter: disnake.ApplicationCommandInteraction):
@@ -155,5 +164,5 @@ async def restart(inter: disnake.ApplicationCommandInteraction):
     python = sys.executable
     os.execv(python, [python] + sys.argv)
 
-# Bot Token
+#Bot Token
 bot.run(config.token, reconnect=True)
