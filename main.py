@@ -68,16 +68,6 @@ async def on_voice_state_update(member, before, after):
     if member.id == bot.user.id:  # Check if the member is the bot itself
         if before.deaf != after.deaf:  # Check if the deaf state has changed
             await member.edit(deafen=True)  # Deafen the bot
-"""
-@bot.event
-async def on_voice_state_update(member, before, after):
-    bot_voice_channel = member.guild.voice_client
-    if bot_voice_channel and len(bot_voice_channel.channel.members) == 1 and bot_voice_channel.channel.members[0] == bot.user:
-        await asyncio.sleep(60)
-    if bot_voice_channel and len(bot_voice_channel.channel.members) == 1 and bot_voice_channel.channel.members[0] == bot.user:
-        await bot_voice_channel.disconnect()
-        print(f"Left {bot_voice_channel.channel.name} due to inactivity.")
-"""
 
 # On Ready
 @bot.event

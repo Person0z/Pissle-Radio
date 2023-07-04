@@ -33,7 +33,6 @@ class owner(commands.Cog):
             await asyncio.sleep(2)
         if bot_voice_channel and len(bot_voice_channel.channel.members) == 1 and bot_voice_channel.channel.members[0] == self.bot.user:
             await bot_voice_channel.disconnect()
-            print(f"Left {bot_voice_channel.channel.name} due to inactivity.")
 
     # A slash command to raise an error
     @commands.slash_command(name="error", description="Command that raises an error")
@@ -87,7 +86,7 @@ class owner(commands.Cog):
             self.bot.reload_extension(f"cogs.{cog}")
             await inter.send(f'Reloaded the cog: ``{cog}``', ephemeral=True)
         except Exception as e:
-            await inter.send(f'Failed to reload the cog: ``{cog}``', ephemeral=True)
+            await inter.send(f'Failed to reload the cog: ``{cog}`` because of ``{e}``', ephemeral=True)
 
 def setup(bot):
     bot.add_cog(owner(bot))

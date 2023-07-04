@@ -1,3 +1,0 @@
-2023-07-04 04:55:48,673 - ERROR - Failed to reload owner because of name 'self' is not defined
-2023-07-04 04:58:09,286 - ERROR - An error occurred in command '/restart': CommandInvokeError: Command raised an exception: NameError: name 'self' is not defined
-2023-07-04 05:04:43,728 - ERROR - An error occurred in command '/restart': CommandInvokeError: Command raised an exception: NameError: name 'self' is not defined
