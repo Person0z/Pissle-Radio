@@ -26,18 +26,23 @@ class voice(commands.Cog):
     async def on_ready(self):
         print(f'Loaded Cog voice')
 
-    @commands.slash_command(description='Start a radio station in your voice channel')
-    @commands.cooldown(1, 15, commands.BucketType.user) 
+    @commands.slash_command(description='Initiate a radio station broadcast in your current voice channel')
+    @commands.cooldown(1, 15, commands.BucketType.user)
     async def radio(
         inter: disnake.ApplicationCommandInteraction,
-        country: typing.Literal["US - United States", "UK - United Kingdom", "FR - France", "AF - Africa", "PH - Philippines", "TR - Turkey", "RU - Russia"],
+        continent: typing.Literal["North America", "Europe", "South America", "Asia", "Africa"],
+        country: str,
         action: str
     ):
-        stations = open("data/stations.json")
-        _stations = json.load(stations)
+        await inter.response.defer()
+
+        stations_file = "data/stations.json"
+        with open(stations_file, "r") as file:
+            stations_data = json.load(file)
+
         if inter.author.voice is None:
             embed = disnake.Embed(
-                title="Radio", description="```You are not in a voice channel.```", color=disnake.Color.red())
+                title="Radio", description="```You are not connected to a voice channel.```", color=disnake.Color.red())
             return await inter.send(embed=embed)
 
         voice_client = inter.author.voice.channel.guild.voice_client
@@ -49,31 +54,57 @@ class voice(commands.Cog):
         if voice_client.is_playing():
             voice_client.stop()
 
+        continent_stations = stations_data.get(f"{continent}_Stations", {})
+        country_stations = continent_stations.get(country, {})
+        station_url = country_stations.get(action)
+
+        if not station_url:
+            embed = disnake.Embed(
+                title="Radio", description="```Selected station information not available.```", color=disnake.Color.red())
+            return await inter.send(embed=embed)
+
         source = disnake.PCMVolumeTransformer(
-            disnake.FFmpegPCMAudio(_stations[f"{country}_Stations"][action]))
+            disnake.FFmpegPCMAudio(station_url, before_options=''), volume=0.2)  # Adjust the volume here
         voice_client.play(source, after=lambda e: print(
             f'Player error: {e}') if e else None)
 
         embed = disnake.Embed(
-            title="Radio | Connect", description=f"```Now playing {action} in {inter.author.voice.channel}```", color=disnake.Color.green())
+            title="Radio | Connection Established", description=f"```Now playing {action} in {inter.author.voice.channel}```", color=disnake.Color.green())
 
-        embed.set_thumbnail(url=_stations[f"{country}_Images"][action])
+        continent_images = stations_data.get(f"{continent}_Images", {})
+        country_images = continent_images.get(country, {})
+        image = country_images.get(action, "")
+        if image:
+            embed.set_thumbnail(url=image)
+
         embed.set_footer(
             text=f"Requested by {inter.author}", icon_url=inter.author.avatar.url)
 
         await inter.send(embed=embed)
 
+
+    @radio.autocomplete('country')
+    async def radio_autocomplete_country(self, inter: disnake.ApplicationCommandInteraction, country: str):
+        continent = inter.filled_options["continent"]
+        available_countries = {
+            "North America": ["United States"],
+            "South America": ["Colombia"],
+            "Europe": ["United Kingdom", "France", "Sweden"],
+            "Asia": ["Philippines", "Russia", "India"],
+            "Africa": ["Africa", "Juba"]
+        }
+        filtered_countries = available_countries.get(continent, [])
+        return [c for c in filtered_countries if country in c]
+
     @radio.autocomplete('action')
-    async def radio_audiocomplete(self, inter: disnake.ApplicationCommandInteraction, action: str):
-        stations = []
+    async def radio_autocomplete_action(self, inter: disnake.ApplicationCommandInteraction, action: str):
+        continent = inter.filled_options["continent"]
         country = inter.filled_options["country"]
-        with open("data/stations.json") as f:
-            data = json.load(f)
-            for i in data[f"{country}_Stations"]:
-                if action in i:
-                    stations.append(i)
-        return stations
-            
+        stations = open("data/stations.json")
+        _stations = json.load(stations)
+        available_actions = _stations[f"{continent}_Stations"][country].keys()
+        return [a for a in available_actions if action in a]
+
     @commands.slash_command(name="disconnect", description="Disconnects the bot from the voice channel")
     @commands.cooldown(1, 15, commands.BucketType.user) 
     async def disconnect(inter: disnake.ApplicationCommandInteraction):
@@ -94,24 +125,47 @@ class voice(commands.Cog):
             embed.set_thumbnail(url=inter.guild.me.avatar.url)
             await inter.send(embed=embed)
             
-    @commands.slash_command(description='Edit the volume of the bot in your voice channel')
-    @commands.cooldown(1, 60, commands.BucketType.user)
-    async def volume(self, ctx, volume: int):
-        guild = ctx.guild
-        voice_client = guild.voice_client
+    @commands.slash_command(description="Volume control for the radio")
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def volume(inter: disnake.ApplicationCommandInteraction, volume: int):
+        voice_client = inter.guild.voice_client
         if voice_client is None:
-            embed = disnake.Embed(title='Volume | Error', description='Not connected to a Voice Channel, please join one and try again', color=config.Error())
-            return await ctx.send(embed=embed)
-        if volume > 100:
-            volume = 100
-            embed = disnake.Embed(title='Volume | Error', description='The volume cannot be set higher than 100%', color=config.Error())
-            return await ctx.send(embed=embed)
-        elif volume < 0:
-            volume = 0
-        voice_client.source.volume = volume / 100
-        embed = disnake.Embed(title='Volume | Control', description=f'The volume has been changed and set to {volume}%. Run this command again to change it!', color=config.Success())
-        message = await ctx.send(embed=embed)
-        await asyncio.sleep(10)
+            embed = disnake.Embed(
+                title="Radio | Volume",
+                description="```I am not currently connected to any voice channels.```",
+                color=disnake.Color.red()
+            )
+            embed.set_footer(
+                text=f"Requested by {inter.author}", icon_url=inter.author.avatar.url
+            )
+            embed.set_thumbnail(url=inter.guild.me.avatar.url)
+            await inter.response.send_message(embed=embed)
+        else:
+            max_ffmpeg_volume = 0.2
+            if volume > 100:
+                embed = disnake.Embed(
+                    title="Radio | Volume",
+                    description="```Volume cannot be higher than 100```",
+                    color=disnake.Color.red()
+                )
+                embed.set_footer(
+                    text=f"Requested by {inter.author}", icon_url=inter.author.avatar.url
+                )
+                embed.set_thumbnail(url=inter.guild.me.avatar.url)
+                await inter.response.send_message(embed=embed)
+            else:
+                adjusted_volume = int(volume * max_ffmpeg_volume)
+                voice_client.source.volume = adjusted_volume / 100
+                embed = disnake.Embed(
+                    title="Radio | Volume",
+                    description=f"```Volume set to {adjusted_volume}% of maximum (20%)```",
+                    color=disnake.Color.green()
+                )
+                embed.set_footer(
+                    text=f"Requested by {inter.author}", icon_url=inter.author.avatar.url
+                )
+                embed.set_thumbnail(url=inter.guild.me.avatar.url)
+                await inter.response.send_message(embed=embed)
 
     @commands.slash_command(description="Mutes the bot in the voice channel until unmuted (server wide)")
     @commands.cooldown(1, 5, commands.BucketType.user) 
@@ -128,15 +182,12 @@ class voice(commands.Cog):
         status = "muted" if is_muted else "unmuted"
         bot_member = guild.get_member(self.bot.user.id)
         
-        # Update bot's nickname with mute emoji
-#        new_nickname = f"{bot_member.display_name} (Muted 🔇)" if is_muted else bot_member.name
-#        await bot_member.edit(nick=new_nickname)
-        
         embed = disnake.Embed(title='Mute | Control', description=f'The bot has been {status}.', color=config.Success())
         message = await ctx.send(embed=embed)
         await asyncio.sleep(10)
 
     @commands.slash_command(description="Play a custom stream link (does not work with youtube links)")
+    @checks.is_guild()
     async def play(self, ctx, link: str):
         if ctx.author.voice is None:
             embed = disnake.Embed(
@@ -171,7 +222,7 @@ class voice(commands.Cog):
                 title="Join", description="You are not in a voice channel.", color=config.Error())
             await ctx.send(embed=embed)
             return
-
+        
         voice_channel = ctx.author.voice.channel
         voice_client = disnake.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
 

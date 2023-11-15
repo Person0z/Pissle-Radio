@@ -1,6 +1,31 @@
 {
     "updates": [
       {
+        "version": "v1.1.7-beta",
+        "timestamp": "Tuesday, September 19, 2023",
+        "log": "- Major overhaul to commands\n- Fixed the disconnecting issue after 2 minutes of the bot joining.\n- Improved and fixed the error handler\n- Revamped the ``/botinfo`` command\n- Resolved auto-deafen issue for the bot\n- Enhanced the ``/join`` command\n- Updated the wiki to be in the updated format"
+      },      
+      {
+        "version": "v1.1.6-beta",
+        "timestamp": "Tuesday, August 22, 2023",
+        "log": "Added:\n- ``/report`` command for users to report issues with the bot if there are any.\n\nOther Changes:\n- Removed Turkey radio stations temporarily due to a bug that caused the bot to crash when playing a station from there. These stations will be added back later.\n- Redid and added content to the help command.\n- Reworked the radio command for better optimization and functionality.\n- Currently working on a new command, ``/verify``, which requires users to join the support server and execute the command. This grants access to additional features in the bot and alpha commands that are not yet available to the public. Remaining in the server is necessary to maintain verified status and access to the associated benefits."
+      },
+      {
+        "version": "v1.1.5-beta",
+        "timestamp": "Sunday, August 20, 2023",
+        "log": "Added:\n- ``/volume`` command is back and working!\n- Added more radio stations for Africa\n- Reworked ``/suggestions`` command\n- Some other stuff have been redone for the bot for better listening!"
+      },
+      {
+        "version": "v1.1.4-beta",
+        "timestamp": "Sunday, August 20, 2023",
+        "log": "Major rehaul to the ``/radio`` command (Expect Bugs, please report them to ``Person0z``:\n\n- Improved station sorting for better user experience.\n- Corrected handling of thumbnail URLs.\n- Optimized URL retrieval for selected radio station action.\n- Updated stream link URLs for enhanced reliability and performance."
+      },        
+      {
+        "version": "v1.1.3-beta",
+        "timestamp": "Thursday, August 17, 2023",
+        "log": "- Worked on some errors that popped up.\n- optimized the bot a bit more, and added a few more radio stations.\n- Fixed the bot volume having been very loud when in VC, it has been reduced and made quieter, speaking of that the ``/volume`` command has been removed temporarily while i work on a fix to implement to new volume limit."
+      },
+      {
         "version": "v1.1.2-beta",
         "timestamp": "July 2nd, 2023",
         "log": "Change log\n- Optimized Code and doing further optimizing.\n- Added a auto leave after 60 seconds so the bot wont use up resources and play music if no one is a VC\n- Worked on a ``/join`` command and a ``/disconnect`` command\n- Added a few more things to the ``/botinfo`` command (swap usage)\n\n- **HOTFIX**: Quick hotfix for the auto disconnect as it was disconnecting when people were in the vc still. Has been fixed and reworked."

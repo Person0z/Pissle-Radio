@@ -1,0 +1,5 @@
+disnake
+psutil
+requests
+aiohttp
+PyNaCl

@@ -14,6 +14,24 @@ version = "v1.0.9-beta"
 # Bot Token
 token = "MTEyMTg0ODkxMDgzOTgxMjEyNg.G7eF3A.KcgU0gkWMpC3WadN1k4IyiuI4vRKrqqG5u3tzg"
 
+# Colors
+Success = disnake.Color.green
+Error = disnake.Color.red
+Random = disnake.Color.random
+
+# Invite perm
+invite_perm = 274914659392
+
+# Owner ID
+owner_ids = ['640363201510244362']
+
+# Guild IDs
+guilds_ids = 1121849705735929886
+
+# Support Channel ID
+support_channel = 1121918891623469186
+logs_channel = 1124554838500446268
+
 # Bot Activity
 activity = [
     "/help",
@@ -64,17 +82,3 @@ activity = [
     "Not just a playlist, but a collection of comedic gold to brighten your day.",
     "Spinning jokes and tunes, spreading joy like musical confetti in the digital airwaves."
     ]
-
-# Colors
-Success = disnake.Color.green
-Error = disnake.Color.red
-Random = disnake.Color.random
-
-# Invite perm
-invite_perm = 274914659392
-
-# Owner ID
-owner_ids = 640363201510244362
-
-# Guild IDs
-guilds_ids = [1121849705735929886]

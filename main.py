@@ -54,20 +54,38 @@ async def global_blacklist_check(inter: disnake.ApplicationCommandInteraction):
 
 @bot.event
 async def on_slash_command_error(inter, error):
-    try:
-        raise error
-    except commands.CommandOnCooldown as e:
-        await inter.response.send_message(f"This command is on cooldown. Please try again in {e.retry_after:.2f} seconds.", ephemeral=True)
-    except Exception as e:
-        await inter.response.send_message("**An error occurred while processing your command.**\n> This has already been logged **and** already sent to the developer.\n\n- For more support join: https://discord.gg/E3cs9ewqMP", ephemeral=True)
-        command_name = inter.data['name']
-        logging.error(f"An error occurred in command '/{command_name}': {type(e).__name__}: {e}")
+    guild = bot.get_guild(config.guilds_ids)
+    if guild is None:
+        raise Exception('Server not found')
 
+    channel = guild.get_channel(config.logs_channel)
+    if channel is None:
+        raise Exception('Channel not found')
+
+    command_name = inter.data['name']  # Moved this line up
+
+    if isinstance(error, commands.CommandOnCooldown):
+        await inter.response.send_message(f"This command is on cooldown. Please try again in {error.retry_after:.2f} seconds.", ephemeral=True)
+    else:
+        # Create the embed
+        embed = disnake.Embed(
+            title=f'Error in command: {command_name}',
+            description=f'An error occurred in command /{command_name}: {type(error).__name__}: {error}',
+            color=disnake.Color.red(),
+        )
+        embed.set_footer(text=f'Report by {inter.author}', icon_url=inter.author.avatar.url)
+
+        error_message = "**An error occurred while processing your command.**\n> This error has been logged and sent to the developer for investigation.\n\nFor more support, join: [Discord Support Server](https://discord.gg/E3cs9ewqMP)"
+        await inter.response.send_message(error_message, ephemeral=True)
+
+        logging.error(f"An error occurred in command '/{command_name}': {type(error).__name__}: {error}")
+        message = await channel.send(embed=embed)
+
+# auto deafen on join
 @bot.event
 async def on_voice_state_update(member, before, after):
-    if member.id == bot.user.id:  # Check if the member is the bot itself
-        if before.deaf != after.deaf:  # Check if the deaf state has changed
-            await member.edit(deafen=True)  # Deafen the bot
+    if member == bot.user and after.channel is not None:
+        await member.guild.change_voice_state(channel=after.channel, self_deaf=True, self_mute=False)
 
 # On Ready
 @bot.event
@@ -82,7 +100,7 @@ async def on_ready():
     print('===============================================')
     print("The bot is ready!")
     print(f'Logged in as {bot.user.name}#{bot.user.discriminator} | {bot.user.id}')
-    print(f"In: {len(bot.guilds)} server(s) | {len(bot.users)} user(s)") 
+    print(f"In: {len(bot.guilds)} server(s) | {sum(guild.member_count for guild in bot.guilds)} user(s)") 
     print(f'Running on {platform.system()} {platform.release()} ({os.name})')
     print(f"Disnake version : {disnake.__version__}")
     print(f"Python version: {platform.python_version()}")

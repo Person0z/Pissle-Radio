@@ -29,10 +29,19 @@ class owner(commands.Cog):
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         bot_voice_channel = member.guild.voice_client
-        if bot_voice_channel and len(bot_voice_channel.channel.members) == 1 and bot_voice_channel.channel.members[0] == self.bot.user:
-            await asyncio.sleep(2)
-        if bot_voice_channel and len(bot_voice_channel.channel.members) == 1 and bot_voice_channel.channel.members[0] == self.bot.user:
-            await bot_voice_channel.disconnect()
+        if str(member.guild.id) in ["1121849705735929886"]:
+            return
+        if (
+            bot_voice_channel and len(bot_voice_channel.channel.members) == 1 
+            and bot_voice_channel.channel.members[0] == self.bot.user
+            ):
+            await asyncio.sleep(10)
+        if (
+            bot_voice_channel and len(bot_voice_channel.channel.members) == 1
+            and bot_voice_channel.channel.members[0] == self.bot.user
+            ):
+                await bot_voice_channel.disconnect()
+                print(f'Bot disconnected from {member.guild.name} due to inactivity.')
 
     # A slash command to raise an error
     @commands.slash_command(name="error", description="Command that raises an error")
@@ -54,7 +63,7 @@ class owner(commands.Cog):
             action = 'blacklisted'
         with open('data/blacklist.json', 'w') as file:
             json.dump(blacklist, file, indent=4)
-        await ctx.send(f'{user} has been {action}.')
+        await ctx.send(f'User: **{user}** blacklist status has changed: **{action}**.')
 
     # A slash command to restart the bot
     @commands.slash_command(name="restart", description="Restarts the bot", guild=config.guilds_ids)
@@ -64,17 +73,18 @@ class owner(commands.Cog):
         if radio_player is not None:
             radio_player.pause_all()
         # Play the restart message
-        voice_client = disnake.utils.get(self.bot.voice_clients, guild=inter.guild)
-        if voice_client is not None and voice_client.is_connected():
-            voice_client.stop()
-            voice_client.play(disnake.FFmpegPCMAudio('assets/restart.mp3'))
+        for guild in self.bot.guilds:
+            if guild.voice_client is not None and guild.voice_client.is_connected():
+                guild.voice_client.stop()
+                guild.voice_client.play(disnake.FFmpegPCMAudio('assets/restart.mp3'))
         # Send a message to the user
         await inter.send("Restarting the bot, please hold tight...", ephemeral=True)
         # Wait 10 seconds
         await asyncio.sleep(10)
         # Disconnect from the voice channel (if connected)
-        if voice_client is not None and voice_client.is_connected():
-            await voice_client.disconnect()
+        for guild in self.bot.guilds:
+            if guild.voice_client is not None and guild.voice_client.is_connected():
+                await guild.voice_client.disconnect()
         # Restart the bot
         os.execl(sys.executable, sys.executable, *sys.argv)
 

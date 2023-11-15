@@ -1,0 +1,13 @@
+[Unit]
+Description=Pissle Radio Bot
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3.11 /root/Pissle-Radio/main.py
+WorkingDirectory=/root/Pissle-Radio
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target 
+

@@ -32,30 +32,25 @@ class general(commands.Cog):
         cpu = psutil.cpu_percent()
         ram_used = psutil.virtual_memory().used / (1024.0 ** 3)
         ram_total = psutil.virtual_memory().total / (1024.0 ** 3)
-
-        shard_info = ''
-        for shard_id, shard in enumerate(self.bot.latencies):
-            shard_info += f'Shard ID: {shard_id}, Latency: {shard[1]}\n'
         total_shards = len(self.bot.latencies)
         
+        shard_info = '\n'.join([f'Shard ID: {shard_id}, Latency: {shard[1]}' for shard_id, shard in enumerate(self.bot.latencies)])
+
         embed = disnake.Embed(title=f"{self.bot.user.name}'s Info", color=config.Success())
         embed.add_field(name="Bot Info", value=f"""
-            Bot: ```{self.bot.user.name}#{self.bot.user.discriminator} ({self.bot.user.id})```
-            Bot Created: ```{self.bot.user.created_at.strftime('%a, %#d %B %Y, %I:%M %p UTC')}```
-            Bot CPU Usage: ```{cpu}% / 100%```
-            Bot RAM Usage: ```{ram_used:.2f} GB / {ram_total:.2f} GB```
-            Bot Swap Usage ```{psutil.swap_memory().used / (1024.0 ** 3):.2f} GB / {psutil.swap_memory().total / (1024.0 ** 3):.2f} GB```
-            Bot Ping: ```{round(self.bot.latency * 1000)}ms```
-            Bot Library: ```Disnake```
-            Bot Developer: ```Person0z```
-            Shard Info: ```{shard_info}```
-            Total Shards: ```{total_shards}```
-            Total Servers: ```{len(self.bot.guilds)}```
-            Total Users: ```{sum(guild.member_count for guild in self.bot.guilds)}```
+            - Bot: `{self.bot.user.name}#{self.bot.user.discriminator} ({self.bot.user.id})`
+            - Bot Created: `{self.bot.user.created_at.strftime('%a, %#d %B %Y, %I:%M %p UTC')}`
+            - Bot Ping: `{round(self.bot.latency *1000)}ms`
+            - Total Servers: `{len(self.bot.guilds)}`
+            - Total Users: `{sum(guild.member_count for guild in self.bot.guilds)}`
+            - Total Radio Stations: `25 Stations`
+            - Bot Invite: [Pissle Bot Radio](https://person0z.me/pissle-radio)
             """, inline=False)
+        embed.add_field(name="Shard Info", value=shard_info, inline=False)
         embed.set_thumbnail(url=self.bot.user.avatar.url)
         embed.set_footer(text=f'Requested by {inter.author}', icon_url=inter.author.avatar.url)
         await inter.response.send_message(embed=embed)
+
 
     # invite the bot to your server
     @commands.slash_command(name='invite',
@@ -76,12 +71,12 @@ class general(commands.Cog):
         suggestion: str,
     ):
         # Get the guild (support server)
-        guild = self.bot.get_guild(1121849705735929886)  # replace with the support server's ID
+        guild = self.bot.get_guild(config.guilds_ids)  # replace with the support server's ID
         if guild is None:
             raise Exception('Support server not found')
             
         # Get the channel
-        channel = guild.get_channel(1121918891623469186)  # replace with the channel's ID in the support server
+        channel = guild.get_channel(config.support_channel)  # replace with the channel's ID in the support server
         if channel is None:
             raise Exception('Suggestions channel not found')
         
@@ -95,9 +90,40 @@ class general(commands.Cog):
         # Send the embed and add reactions
         message = await channel.send(embed=embed)
         await message.add_reaction('👍')
+        await message.add_reaction('🤷‍♂️')
         await message.add_reaction('👎')
 
         await inter.response.send_message("Your suggestion has been sent! Thank you for your feedback.")
+
+    @commands.slash_command(name='report', 
+                            description='report a bug/issue to the creators of the bot')
+    @commands.cooldown(1, 180, commands.BucketType.user) 
+    async def report(
+        self, 
+        inter: disnake.ApplicationCommandInteraction,
+        report: str,
+    ):
+        # Get the guild (support server)
+        guild = self.bot.get_guild(config.guilds_ids)  # replace with the support server's ID
+        if guild is None:
+            raise Exception('Support server not found')
+            
+        # Get the channel
+        channel = guild.get_channel(config.support_channel)  # replace with the channel's ID in the support server
+        if channel is None:
+            raise Exception('report channel not found')
+        
+        # Create the embed
+        embed = disnake.Embed(
+            title=f'Report - {inter.author} ({inter.user.id})',
+            description=f'{inter.user} Reported an issue: \n ```{report}```',
+            color=disnake.Color.red(),
+        )
+        embed.set_footer(text=f'Report by {inter.author}', icon_url=inter.author.avatar.url)
+        # Send the embed and add reactions
+        message = await channel.send(embed=embed)
+
+        await inter.response.send_message("Your report has been sent! Thank you for helping us out!")
 
     @commands.slash_command(description="Get the changes in the latest update")
     async def update(inter: disnake.ApplicationCommandInteraction, version: str):
@@ -206,7 +232,6 @@ class general(commands.Cog):
         embed.add_field(name="Vote Link", value="> [Top.gg Vote Link](https://top.gg/bot/1121848910839812126/vote)", inline=True)
         embed.add_field(name="Developer Github", value="> [Person0z's Github](https://github.com/Person0z)", inline=True)
         await inter.send(embed=embed)
-
 
 def setup(bot):
     bot.add_cog(general(bot))

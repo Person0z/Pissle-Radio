@@ -34,13 +34,15 @@ class Help(commands.Cog):
                     description="Check important commands, that you can use!",
                     colour=config.Success())
                 embedVar.add_field(name="Bot Prefix", value="```/ + !```", inline=False)
-                embedVar.add_field(name="Moderation Commands",
+                embedVar.add_field(name="General Commands",
                                     value=
                                         "```/botinfo - Shows useful (or not) info about the bot```" +
                                         "```/invite - Invite the bot to your server```" +
                                         "```/suggest [suggestion] - Suggest something to the creators of the bot!```" +
+                                        "```/report [report] - Report an issue about the bot, users or radio stations to the developers!```" +
                                         "```/update [version] - Gives update logs that happens on the bot daily!```" +
-                                        "```(Coming Soon) /credits - This will provide credits for all the stations```",
+                                        "```/links - This will get you the links for the bot.```" +
+                                        "```/wiki - You can get some info about the bot here, how it works and more!```",
                                         inline=False)
                 embedVar.add_field(name="Additional Support", value="If you require more support or questions feel free to join the [Pissle Radio Discord](https://discord.gg/wjZfP86RaC)")
                 embedVar.set_thumbnail(
@@ -56,8 +58,10 @@ class Help(commands.Cog):
                 embedVar.add_field(name="Bot Prefix", value="```/ (Slash Commands)```", inline=False)
                 embedVar.add_field(name="Radio Commands",
                                     value=
-                                    "```/radio [region] [action/station] - Start a radio station```" +
+                                    "```/radio continent:[] country:[] action:[] - Start a radio station```" +
+                                    "```/play - this command only works for verified servers, it plays custom links and file audio```"
                                     "```/disconnect - Stop a radio station```" +
+                                    "```/join - Joins a voice channel```" +
                                     "```/volume [0-100] - Sets a volume server wide for the bot (server wide, admins only)```" +
                                     "```/mute - mutes the bot until unmuted. Shows an icon to show the bot is muted!```",
                                     inline=False)
