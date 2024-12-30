@@ -12,7 +12,7 @@ import disnake
 version = "v1.0.9-beta"
 
 # Bot Token
-token = "MTEyMTg0ODkxMDgzOTgxMjEyNg.G7eF3A.KcgU0gkWMpC3WadN1k4IyiuI4vRKrqqG5u3tzg"
+token = "MTEyMTg0ODkxMDgzOTgxMjEyNg.G7eF3A.KcgU0gkWMpC3WadN1k4IyiuI4vRKrqqG5u3tzg" # Invalid Token, Don't try to use it.
 
 # Colors
 Success = disnake.Color.green
@@ -23,14 +23,14 @@ Random = disnake.Color.random
 invite_perm = 274914659392
 
 # Owner ID
-owner_ids = ['640363201510244362']
+owner_ids = ['000']
 
 # Guild IDs
-guilds_ids = 1121849705735929886
+guilds_ids = 000
 
 # Support Channel ID
-support_channel = 1121918891623469186
-logs_channel = 1124554838500446268
+support_channel = 000
+logs_channel = 000
 
 # Bot Activity
 activity = [
